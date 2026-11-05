@@ -20,8 +20,8 @@ Supabase Postgres database as the public platform, using the shared schema in `.
 
 ## Access control
 
-- Sign-in is by one-time email link. Links are only sent to addresses in `CONSOLE_OWNER_EMAILS`; everyone else
-  sees the same "link is on its way" message, so the owner list cannot be probed.
+- Sign-in is a username and password. The username is an email address, and only addresses in `CONSOLE_OWNER_EMAILS`
+  are accepted. A wrong username and a wrong password get the same message.
 - Every page and server action re-checks the signed-in email against `CONSOLE_OWNER_EMAILS`. Removing an address
   locks that person out on their next request.
 - The console uses its own session cookie (`dx-console-auth`), separate from the public site's.
@@ -40,18 +40,15 @@ npm run console:dev    # http://localhost:3001
 | Variable | Value |
 |---|---|
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `DATABASE_URL` | Same as the platform |
-| `CONSOLE_OWNER_EMAILS` | The three owners' emails, comma-separated |
+| `CONSOLE_OWNER_EMAILS` | Usernames allowed to sign in, comma-separated |
 | `CONSOLE_URL` | `http://localhost:3001` locally, the console domain in production |
 | `NEXT_PUBLIC_SITE_URL` | The public site, for the "Open public site" link |
-
-In Supabase, Authentication > URL Configuration > Redirect URLs, add `http://localhost:3001/auth/callback`.
-Open the email link in the same browser you requested it from.
 
 ## Deploy (second Vercel project)
 
 1. In Vercel, **Add New > Project** and import the same GitHub repository again.
 2. Set **Root Directory** to `console`. Framework preset: Next.js. Leave build settings as default.
-3. Add the environment variables above, with `CONSOLE_URL` set to the console's Vercel URL.
-4. Deploy, then add `https://<console-domain>/auth/callback` to the Supabase redirect URLs.
+3. Add the environment variables above. `CONSOLE_OWNER_EMAILS` must include each owner's username.
+4. Deploy. Password sign-in does not use an email redirect.
 5. Recommended: in the console project's **Settings > Deployment Protection**, turn on Vercel Authentication
    so only members of your Vercel team can even load the sign-in page.

@@ -8,7 +8,6 @@ export const metadata: Metadata = { title: "Sign in" };
 
 const ERRORS: Record<string, string> = {
   forbidden: "That account is not authorised to use the DX Console.",
-  link: "That sign-in link is invalid or has expired. Request a new one.",
 };
 
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
@@ -32,7 +31,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
           <LoginForm />
         </div>
         <p className="mt-6 flex items-center justify-center gap-1.5 text-xs text-slate-400">
-          <ShieldCheck size={13} /> Access is logged. Open the link in this browser.
+          <ShieldCheck size={13} /> Access is logged.
         </p>
       </div>
     </main>
