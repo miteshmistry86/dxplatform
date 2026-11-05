@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { authCookieOptions } from "@/lib/supabase/cookie-options";
 
-const PROTECTED_PREFIXES = ["/company", "/developer", "/admin", "/onboarding"];
+const PROTECTED_PREFIXES = ["/company", "/developer", "/onboarding"];
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });

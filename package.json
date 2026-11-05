@@ -2,8 +2,14 @@
   "name": "dx-platform",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "db",
+    "console"
+  ],
   "scripts": {
     "dev": "next dev",
+    "console:dev": "npm run dev --workspace dx-console",
+    "console:build": "npm run build --workspace dx-console",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

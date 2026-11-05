@@ -100,17 +100,6 @@ async function seedDemoResources() {
 async function main() {
   await seedReferenceData();
   if (process.argv.includes("--demo")) await seedDemoResources();
-
-  const adminEmails = (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  if (adminEmails.length) {
-    await db
-      .update(schema.users)
-      .set({ role: "admin" })
-      .where(inArray(schema.users.email, adminEmails));
-  }
 }
 
 main()

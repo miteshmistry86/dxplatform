@@ -1,6 +1,11 @@
 # Developer Exchange Platform
 
-Public site, company portal, developer portal and admin backend for Developer Exchange, in a single Next.js app.
+Two Next.js apps over one Supabase database:
+
+- **Platform** (this folder): public site, company portal and developer portal.
+- **DX Console** (`console/`): the internal management portal, restricted to the DX owners. See [`console/README.md`](console/README.md).
+
+Both apps share the schema in `db/` (an npm workspace package, `@dx/db`).
 
 | Layer | Technology |
 |---|---|
@@ -9,12 +14,21 @@ Public site, company portal, developer portal and admin backend for Developer Ex
 | Auth | Supabase Auth (email + password, email confirmation) |
 | Hosting | Vercel (app) + Supabase (database, auth); both in an EU region |
 
+## Environments
+
+| Environment | URL | Hosting | Database |
+|---|---|---|---|
+| Production (live site) | https://dxplatform-ashen.vercel.app | Vercel (`main` branch) | Supabase, Frankfurt |
+| DX Console (owners only) | Set when the second Vercel project is created | Vercel (`main`, root `console`) | Same Supabase project |
+
+Use the Production URL for the Supabase Site URL, the `NEXT_PUBLIC_SITE_URL` variable in Vercel, and the auth redirect `https://dxplatform-ashen.vercel.app/auth/callback`.
+
 ## Areas
 
 - **Public site:** `/`, `/services`, `/agentic-sdlc`, `/for-developers`, `/about`, `/contact`
 - **Company portal:** `/company` (browse masked talent catalogue, request screening/booking, submit resource requests)
 - **Developer portal:** `/developer` (build profile: details, skills, certifications, experience; submit for CTA screening)
-- **Admin:** `/admin` (screening queue and decisions, developers, companies, requests, contact requests, reference data)
+- **Management:** not in this app. Screening, CRM and reference data live in the DX Console (`console/`).
 
 ## Data model
 
@@ -39,7 +53,7 @@ shape as production.
 1. In the [Supabase dashboard](https://supabase.com/dashboard), create a project in an EU region
    (London `eu-west-2` or Frankfurt `eu-central-1`). Keep the database password; it is shown only once.
 2. Copy `.env.example` to `.env.local` and fill in the project URL, anon key and both connection strings
-   from Project Settings. Put your email in `ADMIN_EMAILS`.
+   from Project Settings.
    - `DATABASE_URL`: Transaction pooler, port `6543`
    - `DIRECT_DATABASE_URL`: Session pooler or direct connection, port `5432` (used by migrations)
 3. In Authentication > URL Configuration, set the Site URL to `http://localhost:3000` and add
@@ -54,14 +68,14 @@ shape as production.
    npm run dev
    ```
 
-5. Register at `/register/developer` with an email listed in `ADMIN_EMAILS`. That account is provisioned as
-   an admin on first sign-in and lands on `/admin`.
+5. To manage the data, run the DX Console alongside it: `npm run console:dev` (port 3001).
 
 ## Scripts
 
 | Script | Purpose |
 |---|---|
-| `npm run dev` | Start the dev server |
+| `npm run dev` | Start the platform dev server (port 3000) |
+| `npm run console:dev` | Start the DX Console dev server (port 3001) |
 | `npm run build` | Production build |
 | `npm run typecheck` | TypeScript check |
 | `npm run db:generate` | Generate a migration after editing `db/schema.ts` |

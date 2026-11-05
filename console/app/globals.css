@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-navy-950: #0b1024;
+  --color-navy-900: #111836;
+  --color-navy-800: #1a2348;
+
+  --color-brand-cyan: #22d3ee;
+  --color-brand-indigo: #6366f1;
+  --color-brand-violet: #a855f7;
+}
+
+body {
+  background: #f5f6fa;
+  color: #0f172a;
+}
+
+.bg-brand-gradient {
+  background-image: linear-gradient(135deg, var(--color-brand-cyan), var(--color-brand-indigo) 55%, var(--color-brand-violet));
+}

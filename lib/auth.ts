@@ -19,27 +19,17 @@ export interface SignUpMetadata {
   company_name?: string;
 }
 
-function isAdminEmail(email: string) {
-  return (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .includes(email.toLowerCase());
-}
-
+/** Public sign-ups are only ever company users or developers; owners use the separate DX Console. */
 async function provisionUser(authUser: User): Promise<AppUser> {
   const db = getDb();
   const meta = (authUser.user_metadata ?? {}) as Partial<SignUpMetadata>;
   const email = authUser.email!;
   const accountType: AccountType = meta.account_type === "company" ? "company" : "developer";
-  const role: Role = isAdminEmail(email)
-    ? "admin"
-    : accountType === "company"
-      ? "company_user"
-      : "developer";
+  const role: Role = accountType === "company" ? "company_user" : "developer";
 
   return db.transaction(async (tx) => {
     let organisationId: string | null = null;
-    if (accountType === "company" && role !== "admin") {
+    if (accountType === "company") {
       const [org] = await tx
         .insert(schema.organisations)
         .values({ type: "client_company", name: meta.company_name?.trim() || email.split("@")[1] })
@@ -58,7 +48,7 @@ async function provisionUser(authUser: User): Promise<AppUser> {
       })
       .returning({ id: schema.people.id });
 
-    if (accountType === "developer" && role !== "admin") {
+    if (accountType === "developer") {
       await tx.insert(schema.resourceProfiles).values({ personId: person.id });
     }
 
@@ -90,7 +80,7 @@ export const getCurrentUser = cache(async (): Promise<AppUser | null> => {
 export function homeFor(role: Role) {
   switch (role) {
     case "admin":
-      return "/admin";
+      return process.env.NEXT_PUBLIC_CONSOLE_URL ?? "/";
     case "company_user":
       return "/company";
     case "partner_admin":
